@@ -6,19 +6,17 @@ Mafia Game Rules:
 1. Roles:
    - Mafia: The Mafia's goal is to eliminate all Townspeople without being discovered. They work together to secretly eliminate players during the night.
    - Townsperson: The Townspeople's goal is to identify and eliminate the Mafia. They must use deduction and discussion to uncover the Mafia members.
-   - Doctor: The Doctor can save one person each night from being eliminated. They must choose wisely to protect key players.
-   - Detective: The Detective can investigate one person each night to determine if they are Mafia. They must use their findings strategically to guide the Townspeople.
 
 2. Game Phases and Cycle:
    - The game alternates between two main phases: Night and Day.
    - Night Phase: 
      - The Mafia secretly selects a target to eliminate.
-     - The Doctor chooses one player to save, potentially preventing an elimination.
-     - The Detective investigates one player to learn their role.
      - All actions are submitted to the game moderator, who resolves them.
    - Day Phase:
-     - All players discuss and debate who they believe is the Mafia.
-     - Players can share suspicions, evidence, and any information they have gathered.
+     - There are three rounds in the morning phase:
+       1. Players discuss and give arguments.
+       2. Players provide defenses, followups, or counter arguments.
+       3. Players vote.
      - A vote is held, and the player with the most votes is eliminated. If there is a tie, no one is eliminated.
      - The day phase ends with the elimination, and the cycle repeats with the next night phase.
 

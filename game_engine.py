@@ -3,6 +3,7 @@ from api_key import get_api_key
 from gpt_client import ChatGPTClient
 from context_manager import ContextManager
 from agent import Agent
+from vote_manager import VoteManager
 
 import random
 
@@ -14,11 +15,14 @@ def generate_random_names(num_names=10):
 class GameEngine:
     def __init__(self, num_players=4, num_mafia=1, num_days=2):
         """Initializes the game engine with the specified number of players, mafia, and days."""
+        if num_mafia >= num_players:
+            raise ValueError("Number of mafia must be less than the number of players.")
         self.num_players = num_players
         self.num_mafia = num_mafia
         self.num_days = num_days
-        self.agents = self.create_agents()
         self.context_manager = ContextManager()
+        self.llm_client = ChatGPTClient(get_api_key())
+        self.agents = self.create_agents()
         self.context_manager.update_game_history(f"Game started with {self.num_players} players.")
         self.display_initial_roles()
         self.run_game()
@@ -29,10 +33,11 @@ class GameEngine:
         random_names = generate_random_names(self.num_players)
         roles = ['Mafia'] * self.num_mafia + ['Townsperson'] * (self.num_players - self.num_mafia)
         random.shuffle(roles)
+
         for i in range(self.num_players):
             role = roles[i]
             name = random_names[i]
-            agents.append(Agent(role, name))
+            agents.append(Agent(role, name, self.context_manager, self.llm_client))
         return agents
 
     def display_initial_roles(self):
@@ -52,25 +57,11 @@ class GameEngine:
         else:
             return False, ""
 
-    def run_game(self):
-        """Runs the game loop, iterating over days and checking for game over conditions."""
-        for day in range(self.num_days):
-            print(f"Day {day + 1} begins.")
-
-            print("It is night and players take night actions")
-            self.night_phase()
-
-            game_over, result = self.game_over()
-            if game_over:
-                print(result)
-                break
-
-            print("It is morning and players take morning actions")
-            self.morning_phase()
-            
-            print(f"Day {day + 1} ends.")
-        else:
-            print("Game ended after maximum days.")
+    def call_agent(self, agent):
+        """Placeholder for calling agent actions."""
+        call_action_message = f"Calling agent {agent.get_name()} for action."
+        print(call_action_message)
+        self.context_manager.update_game_history(call_action_message)
 
     def night_phase(self):
         """Handles the night phase where agents perform their actions."""
@@ -80,26 +71,71 @@ class GameEngine:
 
     def morning_phase(self):
         """Handles the morning phase where players discuss and vote."""
-        print("Morning phase begins. Players discuss and vote.")
+        morning_start_message = "There are three rounds in the morning phase. First round: Players discuss and give arguments. Second round: Players provide defenses, followups, or counter arguments. Third round: Players vote."
+        print(morning_start_message)
+        self.context_manager.update_game_history(morning_start_message)
         
+        first_round_message = "First round of discussion begins."
+        print(first_round_message)
+        self.context_manager.update_game_history(first_round_message)
         # First round: every agent gives an argument
         for agent in self.agents:
             if agent.get_status():
-                print(f"{agent.get_name()} gives an argument.")
-        
+                argument_message = f"{agent.get_name()}: {agent.provide_discussion(self.agents)}"
+                print(argument_message)
+                self.context_manager.update_game_history(argument_message)
+
+
+        # Announce the second round of discussion
+        second_round_message = "Second round of discussion begins. Players should provide defenses, followups, or counter arguments. The next round is voting."
+        print(second_round_message)
+        self.context_manager.update_game_history(second_round_message)
+
         # Second round: every agent gives a defense or followup or counter argument
         for agent in self.agents:
             if agent.get_status():
-                print(f"{agent.get_name()} gives a defense or followup or counter argument.")
+                defense_message = f"{agent.get_name()}: {agent.provide_counter_argument(self.agents)}"
+                print(defense_message)
+                self.context_manager.update_game_history(defense_message)
         
+        print("It is the third round. Players should now vote.")
         # Third round: agents vote
-        for agent in self.agents:
-            if agent.get_status():
-                print(f"{agent.get_name()} votes.")
+        vote_manager = VoteManager(self.agents, self.context_manager)
+        vote_manager.conduct_vote()
 
-    def call_agent(self, agent):
-        """Placeholder for calling agent actions."""
-        print(f"Calling agent {agent.get_name()} for action.")
+    def run_game(self):
+        """Runs the game loop, iterating over days and checking for game over conditions."""
+        for day in range(self.num_days):
+            day_start_message = f"Day {day + 1} begins."
+            print(day_start_message)
+            self.context_manager.update_game_history(day_start_message)
+
+            night_phase_message = "It is night and players take night actions"
+            print(night_phase_message)
+            self.context_manager.update_game_history(night_phase_message)
+            self.night_phase()
+
+            game_over, result = self.game_over()
+            if game_over:
+                game_over_message = result
+                print(game_over_message)
+                self.context_manager.update_game_history(game_over_message)
+                break
+
+            morning_phase_message = "It is morning and players take morning actions"
+            print(morning_phase_message)
+            self.context_manager.update_game_history(morning_phase_message)
+            self.morning_phase()
+            
+            day_end_message = f"Day {day + 1} ends."
+            print(day_end_message)
+            self.context_manager.update_game_history(day_end_message)
+        else:
+            max_days_message = "Game ended after maximum days."
+            print(max_days_message)
+            self.context_manager.update_game_history(max_days_message)
+
+    
 
     
 # Create agents and print their names for testing outside of the class
