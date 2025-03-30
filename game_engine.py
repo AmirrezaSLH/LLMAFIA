@@ -2,7 +2,7 @@
 from api_key import get_api_key
 from gpt_client import ChatGPTClient
 from context_manager import ContextManager
-from agent import Agent
+from agent import Agent, MafiaAgent, TownspersonAgent
 from vote_manager import VoteManager
 
 from log import write_log
@@ -22,7 +22,7 @@ class GameEngine:
         self.num_mafia = num_mafia
         self.num_days = num_days
         self.context_manager = ContextManager()
-        self.context_manager.update_game_history(f"Game started with {self.num_players} players.")
+        self.context_manager.update_game_history(f"The game has commenced with a total of {self.num_players} players. This includes {self.num_mafia} Mafia members and {self.num_players - self.num_mafia} Townspeople.")
         self.llm_client = ChatGPTClient(get_api_key())
         self.agents = self.create_agents()
 
@@ -39,7 +39,11 @@ class GameEngine:
         for i in range(self.num_players):
             role = roles[i]
             name = random_names[i]
-            agents.append(Agent(role, name, self.context_manager, self.llm_client))
+            self.context_manager.set_player_role(name, role)  # Write roles to context manager
+            if role == 'Mafia':
+                agents.append(MafiaAgent(name, self.context_manager, self.llm_client))
+            else:
+                agents.append(TownspersonAgent(name, self.context_manager, self.llm_client))
         return agents
 
     def display_initial_roles(self):
@@ -134,7 +138,7 @@ class GameEngine:
                 game_over_message = result
                 print(game_over_message)
                 self.context_manager.update_game_history(game_over_message)
-                write_log("\n \n".join(self.context_manager.get_game_history()))
+                write_log(self.context_manager.get_final_game_log())
                 break
 
             morning_phase_message = "It is morning and players take morning actions"
@@ -147,7 +151,7 @@ class GameEngine:
                 game_over_message = result
                 print(game_over_message)
                 self.context_manager.update_game_history(game_over_message)
-                write_log("\n \n".join(self.context_manager.get_game_history()))
+                write_log(self.context_manager.get_final_game_log())
                 break
 
             day_end_message = f"Day {day + 1} ends."
@@ -161,7 +165,7 @@ class GameEngine:
     
 if __name__ == "__main__":
     # Initialize the game engine with specified parameters
-    game_engine = GameEngine(num_players=7, num_mafia=1, num_days=4)
+    game_engine = GameEngine(num_players=5, num_mafia=1, num_days=4)
     
     # Display the initial roles of the agents
     game_engine.display_initial_roles()
