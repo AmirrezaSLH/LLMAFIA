@@ -15,7 +15,10 @@ class Agent:
 
     def update_personal_history(self, event):
         self.personal_history.append(event)
-    
+        if self.role == 'Mafia':
+            self.personal_history.append(f"Remember, your name is {self.name}, you are Mafia. Do not reveal your identity. You are a key player in the Mafia team.")
+        elif self.role == 'Townsperson':
+            self.personal_history.append(f"Remember, your name is {self.name}, you are a Townsperson. Your goal is to identify and eliminate the Mafia. You are a crucial member of the Town.")
     def get_status(self):
         return self.is_alive
     
@@ -42,6 +45,7 @@ class Agent:
         prompt = (
             f"Game Rules:\n{game_rules}\n\n"
             f"Game History:\n{game_history}\n\n"
+            f"Your Name: {self.name}\n\n"
             f"Your Role: {agent_role}\n\n"
             f"Personal Memory (not known to other players):\n{self.personal_history}\n\n"
             f"Task: {task}\n\n"
@@ -127,5 +131,18 @@ class Agent:
             # Select a target to kill, excluding self
             potential_targets = [player for player in alive_players if player.get_name() != self.name]
             if potential_targets:
-                return potential_targets[0].get_name()  # Example: return the first target
-        return None
+                alive_players_list = ", ".join([player.get_name() for player in potential_targets])
+                kill_task_guideline = (
+                    f"Task: select a target to kill. Output Guideline: choose a target from the alive players ({alive_players_list}) "
+                    "considering the game history, your role, and any personal observations. Ensure your choice aligns with your strategy and the current game dynamics."
+                )
+                
+                kill_output_guideline = (
+                    "Ensure your vote is a single name, returned as one word. "
+                )
+                
+                prompt = self.generate_prompt(kill_task_guideline, kill_output_guideline)
+                response = self.llm_client.call_llm(prompt)
+                
+                selected_target = response.strip()
+                return selected_target

@@ -21,9 +21,10 @@ class GameEngine:
         self.num_mafia = num_mafia
         self.num_days = num_days
         self.context_manager = ContextManager()
+        self.context_manager.update_game_history(f"Game started with {self.num_players} players.")
         self.llm_client = ChatGPTClient(get_api_key())
         self.agents = self.create_agents()
-        self.context_manager.update_game_history(f"Game started with {self.num_players} players.")
+
         self.display_initial_roles()
         self.run_game()
 
@@ -57,17 +58,29 @@ class GameEngine:
         else:
             return False, ""
 
-    def call_agent(self, agent):
-        """Placeholder for calling agent actions."""
-        call_action_message = f"Calling agent {agent.get_name()} for action."
+    def mafia_action(self, agent):
+        """Calls the Mafia agent for action if they are alive."""
+        call_action_message = f"{agent.get_name()}, you are called as the {agent.get_role()} for night phase action in private. Please decide what action you take, and it is private to you."
         print(call_action_message)
-        self.context_manager.update_game_history(call_action_message)
+        agent.update_personal_history(call_action_message)
+        alive_players = [player for player in self.agents if player.get_status()]
+        target = agent.select_target_to_kill(alive_players)
+        if target:
+            print("TEeeeeesst Test Tesssssst ")
+            print(target)
+            for player in self.agents:
+                if player.get_name() == target:
+                    player.set_status(False)
+                    elimination_message = f"{target} has been killed by the Mafia."
+                    print(elimination_message)
+                    self.context_manager.update_game_history(elimination_message)
+                    break
 
     def night_phase(self):
         """Handles the night phase where agents perform their actions."""
         for agent in self.agents:
             if agent.get_status() and agent.get_role() == 'Mafia':
-                self.call_agent(agent)  # Call mafia for action
+                self.mafia_action(agent)  # Call mafia for action
 
     def morning_phase(self):
         """Handles the morning phase where players discuss and vote."""
@@ -139,7 +152,7 @@ class GameEngine:
 
     
 # Create agents and print their names for testing outside of the class
-game_engine = GameEngine(num_players=4, num_mafia=1, num_days=2)
+game_engine = GameEngine(num_players=5, num_mafia=1, num_days=3)
 
 #game_engine.display_initial_roles()
 
