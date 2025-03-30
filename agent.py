@@ -22,3 +22,6 @@ class Agent:
     
     def set_status(self, status):
         self.is_alive = status
+
+    def vote(self, alive_players):
+        return f"{self.name} votes among {', '.join(alive_players)}."
