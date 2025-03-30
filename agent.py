@@ -6,6 +6,8 @@ class Agent:
         self.is_alive = True
         self.context_manager = context_manager  # Set context_manager as an input parameter
         self.llm_client = llm_client  # Set llm_client as an input parameter
+        self.llm_client.set_model('gpt-4o' if role == 'Mafia' else 'gpt-4o-mini')  # Set LLM model based on agent role
+        
     
     def get_role(self):
         return self.role

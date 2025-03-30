@@ -5,7 +5,12 @@ class ChatGPTClient:
         self.client = OpenAI(api_key=api_key)
         self.model = model
 
+    def set_model(self, model):
+        """Sets the model to be used for the API calls."""
+        self.model = model
+
     def call_llm(self, query):
+
         """Calls the OpenAI API with the given query and returns the response."""
         chat_completion = self.client.chat.completions.create(
             messages=[{"role": "user", "content": query}],

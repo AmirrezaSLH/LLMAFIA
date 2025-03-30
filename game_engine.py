@@ -5,6 +5,7 @@ from context_manager import ContextManager
 from agent import Agent
 from vote_manager import VoteManager
 
+from log import write_log
 import random
 
 def generate_random_names(num_names=10):
@@ -66,7 +67,7 @@ class GameEngine:
         alive_players = [player for player in self.agents if player.get_status()]
         target = agent.select_target_to_kill(alive_players)
         if target:
-            print("TEeeeeesst Test Tesssssst ")
+           
             print(target)
             for player in self.agents:
                 if player.get_name() == target:
@@ -133,6 +134,7 @@ class GameEngine:
                 game_over_message = result
                 print(game_over_message)
                 self.context_manager.update_game_history(game_over_message)
+                write_log("\n \n".join(self.context_manager.get_game_history()))
                 break
 
             morning_phase_message = "It is morning and players take morning actions"
@@ -140,6 +142,14 @@ class GameEngine:
             self.context_manager.update_game_history(morning_phase_message)
             self.morning_phase()
             
+            game_over, result = self.game_over()
+            if game_over:
+                game_over_message = result
+                print(game_over_message)
+                self.context_manager.update_game_history(game_over_message)
+                write_log("\n \n".join(self.context_manager.get_game_history()))
+                break
+
             day_end_message = f"Day {day + 1} ends."
             print(day_end_message)
             self.context_manager.update_game_history(day_end_message)
@@ -149,11 +159,11 @@ class GameEngine:
             self.context_manager.update_game_history(max_days_message)
 
     
-
+if __name__ == "__main__":
+    # Initialize the game engine with specified parameters
+    game_engine = GameEngine(num_players=7, num_mafia=1, num_days=4)
     
-# Create agents and print their names for testing outside of the class
-game_engine = GameEngine(num_players=5, num_mafia=1, num_days=3)
-
-#game_engine.display_initial_roles()
+    # Display the initial roles of the agents
+    game_engine.display_initial_roles()
 
 

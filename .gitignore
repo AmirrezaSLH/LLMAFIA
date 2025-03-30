@@ -34,3 +34,6 @@ ENV/
 .vscode/
 *.swp
 *.swo 
+
+# Logs
+log/
