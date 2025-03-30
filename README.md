@@ -6,7 +6,7 @@ LLMAFIA is a text-based simulation game where players take on the roles of eithe
 ## Installation
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/llmafia.git
+   git clone https://github.com/AmirrezaSLH/LLMAFIA.git
    ```
 2. Navigate to the project directory:
    ```
