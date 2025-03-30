@@ -1,0 +1,36 @@
+Game Rules
+
+"""
+Mafia Game Rules:
+
+1. Roles:
+   - Mafia: The Mafia's goal is to eliminate all Townspeople without being discovered. They work together to secretly eliminate players during the night.
+   - Townsperson: The Townspeople's goal is to identify and eliminate the Mafia. They must use deduction and discussion to uncover the Mafia members.
+   - Doctor: The Doctor can save one person each night from being eliminated. They must choose wisely to protect key players.
+   - Detective: The Detective can investigate one person each night to determine if they are Mafia. They must use their findings strategically to guide the Townspeople.
+
+2. Game Phases and Cycle:
+   - The game alternates between two main phases: Night and Day.
+   - Night Phase: 
+     - The Mafia secretly selects a target to eliminate.
+     - The Doctor chooses one player to save, potentially preventing an elimination.
+     - The Detective investigates one player to learn their role.
+     - All actions are submitted to the game moderator, who resolves them.
+   - Day Phase:
+     - All players discuss and debate who they believe is the Mafia.
+     - Players can share suspicions, evidence, and any information they have gathered.
+     - A vote is held, and the player with the most votes is eliminated. If there is a tie, no one is eliminated.
+     - The day phase ends with the elimination, and the cycle repeats with the next night phase.
+
+3. Winning Conditions:
+   - The Mafia wins if they outnumber or equal the number of Townspeople, as they can control the vote.
+   - The Townspeople win if they successfully eliminate all Mafia members, ensuring the safety of the town.
+
+4. Rules:
+   - Players must not reveal their roles to others, maintaining secrecy to preserve the game's integrity.
+   - All discussions and votes must take place during the day phase, allowing for open debate and strategy.
+   - The game continues until one of the winning conditions is met, ensuring a clear victor.
+   - Players eliminated from the game must not communicate with active players about the game, preserving the fairness of the ongoing game.
+   - The game moderator oversees the game, ensuring rules are followed and guiding the game phases.
+   
+"""
